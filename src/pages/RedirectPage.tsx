@@ -5,6 +5,12 @@ function fillTemplate(tpl: string, vars: Record<string, string>) {
   return tpl.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
 }
 
+function isInAppBrowser() {
+  const ua = navigator.userAgent || "";
+  // Heurística: Instagram/Facebook/LinkedIn e afins (webviews comuns)
+  return /(Instagram|FBAN|FBAV|FB_IAB|Line|LinkedInApp)/i.test(ua);
+}
+
 type Status = "idle" | "invalid" | "trying";
 
 export default function RedirectPage() {
@@ -51,25 +57,44 @@ export default function RedirectPage() {
     );
   }
 
-  const openApp = () => {
+  const openInNewTab = (url: string) => {
     setStatus("trying");
-    // importante: gesto do usuário (clique) aumenta chance de abrir o app
-    window.location.href = appUrl;
+    // Alguns webviews respeitam melhor abrir fora/aba nova
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  //const looksLikeWebView = isInAppBrowser();
+
   return (
-    <div style={{ padding: 24, fontFamily: "system-ui", maxWidth: 520 }}>
+    <div style={{ padding: 24, fontFamily: "system-ui", maxWidth: 560 }}>
       <h2 style={{ margin: "0 0 8px" }}>Escolha como continuar</h2>
 
-      <p style={{ margin: "0 0 16px", opacity: 0.8 }}>
+      <p style={{ margin: "0 0 16px", opacity: 0.85 }}>
         {status === "trying"
-          ? "Tentando abrir o app…"
-          : "Se estiver em Instagram/Facebook, use “Abrir no navegador” para o app abrir corretamente."}
+          ? "Abrindo…"
+          : "Selecione uma das opções abaixo para acessar a estação de recarga."}
       </p>
 
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        {/* Melhor tentativa: navegação top-level via <a> (não JS) */}
+        <a
+          href={appUrl}
+          onClick={() => setStatus("trying")}
+          style={{
+            display: "inline-block",
+            padding: "10px 14px",
+            borderRadius: 10,
+            border: "1px solid #d1d5db",
+            textDecoration: "none",
+          }}
+        >
+          Abrir no app
+        </a>
+
+        {/* Tentativa alternativa: nova aba (às vezes tira do webview) */}
         <button
-          onClick={openApp}
+          type="button"
+          onClick={() => openInNewTab(appUrl)}
           style={{
             padding: "10px 14px",
             borderRadius: 10,
@@ -78,7 +103,7 @@ export default function RedirectPage() {
             cursor: "pointer",
           }}
         >
-          Abrir no app
+          Abrir no app (nova aba)
         </button>
 
         <a
@@ -93,6 +118,14 @@ export default function RedirectPage() {
         >
           Pagar na web
         </a>
+      </div>
+
+      {/* Dica prática: "Abrir no navegador" */}
+      <div style={{ marginTop: 16, fontSize: 12, opacity: 0.75 }}>
+        <strong>Dica:</strong> Se você abriu pelo Instagram/Facebook/LinkedIn ou
+        leitor de QR “interno”, procure o menu ⋮/… e toque em{" "}
+        <em>“Abrir no navegador”</em>. Webview é onde deep link morre e vira
+        loja.
       </div>
 
       <div style={{ marginTop: 16, fontSize: 12, opacity: 0.7 }}>
