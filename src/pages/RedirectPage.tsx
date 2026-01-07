@@ -5,11 +5,11 @@ function fillTemplate(tpl: string, vars: Record<string, string>) {
   return tpl.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
 }
 
-function isInAppBrowser() {
+/*function isInAppBrowser() {
   const ua = navigator.userAgent || "";
   // Heurística: Instagram/Facebook/LinkedIn e afins (webviews comuns)
   return /(Instagram|FBAN|FBAV|FB_IAB|Line|LinkedInApp)/i.test(ua);
-}
+}*/
 
 type Status = "idle" | "invalid" | "trying";
 
