@@ -57,11 +57,11 @@ export default function RedirectPage() {
     );
   }
 
-  const openInNewTab = (url: string) => {
+  /*const openInNewTab = (url: string) => {
     setStatus("trying");
     // Alguns webviews respeitam melhor abrir fora/aba nova
     window.open(url, "_blank", "noopener,noreferrer");
-  };
+  };*/
 
   //const looksLikeWebView = isInAppBrowser();
 
@@ -92,7 +92,7 @@ export default function RedirectPage() {
         </a>
 
         {/* Tentativa alternativa: nova aba (às vezes tira do webview) */}
-        <button
+        {/*<button
           type="button"
           onClick={() => openInNewTab(appUrl)}
           style={{
@@ -104,7 +104,7 @@ export default function RedirectPage() {
           }}
         >
           Abrir no app (nova aba)
-        </button>
+        </button>*/}
 
         <a
           href={webUrl}
